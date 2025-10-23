@@ -1,7 +1,7 @@
 #Follow General Outline Given my P1 Detailed Briefing
 #For now we will use pseudo code because we have questions for Dr. Keogh in tomorrow's lecture. 
 import numpy as np
-#from user_interface import UI
+from user_interface import validate_file
 import random
 import time 
 import math
@@ -20,26 +20,26 @@ def nearest_neighbor_search(data, period):
     # nxn np array w/ distances
     dist_mat = create_dist_matrix(data)
     # when to end
-    time_limit = time.time + period
+    time_limit = time.time() + period
     # get with pure nearest neighbor greedy choice
     BSF_dist, BSF_order = nearest_neighbor_helper(dist_mat.copy(), False)
-
+    print(f"Nearest w/o randomness found, distance: {BSF_dist}")
     # run until interupt
-    while time.time < time_limit:
+    while time.time() < time_limit:
         # add a bit of randomness
         distance , order = nearest_neighbor_helper(dist_mat.copy(), True, BSF_dist)
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = order
-    
+            print(f"New best distance found: {BSF_dist}")
     return BSF_dist, BSF_order
 
 
-def nearest_neighbor_helper(dist_mat, random, dist_to_beat = float('inf')):
+def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float('inf')):
     '''
         Input:
             dist_mat: nxn np.ndarray
-            random: whether to have 10% chance to not choose shortest
+            simulated_annealing: whether to have 10% chance to not choose shortest
             dist_to_beat: current best
         Output:
             distance: path's distance
@@ -51,28 +51,28 @@ def nearest_neighbor_helper(dist_mat, random, dist_to_beat = float('inf')):
     point = 0 # start at landing bay
     order.append(0)
     while len(visited) != len(dist_mat):
-        if random:
+        if simulated_annealing:
             # 10% chance to not choose shortest
             choose_shortest = random.randint(0,9)
 
-        next_point = np.arg_min(dist_mat[point, :])
+        next_point = np.argmin(dist_mat[point, :])
         while next_point in visited:
             dist_mat[point, next_point] = float('inf')
-            next_point = np.arg_min(dist_mat[point, :])
+            next_point = np.argmin(dist_mat[point, :])
 
         # choose second shortest instead
-        if random and choose_shortest < 1:
+        if simulated_annealing and choose_shortest < 1:
             if len(visited) < len(dist_mat)-1:
-                dist_mat[point, np.arg_min(dist_mat[point, :])] = float('inf')
+                dist_mat[point, np.argmin(dist_mat[point, :])] = float('inf')
                 while next_point in visited:
                     dist_mat[point, next_point] = float('inf')
-                    next_point = np.arg_min(dist_mat[point, :])
+                    next_point = np.argmin(dist_mat[point, :])
         
         # add distance to total distance for this path
         distance += dist_mat[point, next_point]
 
         # early abandoning
-        if not random and distance >= dist_to_beat:
+        if not simulated_annealing and distance >= dist_to_beat:
             return float('inf'), None
         
         # add to path
@@ -96,4 +96,7 @@ def create_dist_matrix(data):
     return dist_mat
 
 if __name__ == '__main__':
-    print()
+    filename = 'data/32Almonds.txt'
+    data = validate_file(filename)
+    print("Beginning search")
+    nearest_neighbor_search(data, 60)
