@@ -19,6 +19,7 @@ def nearest_neighbor_search(data, period):
     '''
     # nxn np array w/ distances
     dist_mat = create_dist_matrix(data)
+    np.savetxt("res/32AlmondsDistMat", dist_mat)
     # when to end
     time_limit = time.time() + period
     # get with pure nearest neighbor greedy choice
@@ -28,6 +29,9 @@ def nearest_neighbor_search(data, period):
     while time.time() < time_limit:
         # add a bit of randomness
         distance , order = nearest_neighbor_helper(dist_mat.copy(), True, BSF_dist)
+        # if distance != float('inf'):
+        #     print(f"Distance: {distance}")
+
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = order
@@ -50,35 +54,43 @@ def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float(
     distance = 0
     point = 0 # start at landing bay
     order.append(0)
+    visited.add(0)
+
     while len(visited) != len(dist_mat):
         if simulated_annealing:
             # 10% chance to not choose shortest
             choose_shortest = random.randint(0,9)
 
-        next_point = np.argmin(dist_mat[point, :])
+        next_point = np.argmin(dist_mat[point, :]) # index of min for row
         while next_point in visited:
-            dist_mat[point, next_point] = float('inf')
-            next_point = np.argmin(dist_mat[point, :])
+            #print("Next point already visited (1)")
+            dist_mat[point, next_point] = float('inf') # changes only for row
+            next_point = np.argmin(dist_mat[point, :]) # index of min for row
 
         # choose second shortest instead
         if simulated_annealing and choose_shortest < 1:
-            if len(visited) < len(dist_mat)-1:
-                dist_mat[point, np.argmin(dist_mat[point, :])] = float('inf')
+            if len(visited) < len(dist_mat)-1: # if not one final point
+                # ignore closest point
+                dist_mat[point, next_point] = float('inf')
+                next_point = np.argmin(dist_mat[point, :]) 
                 while next_point in visited:
-                    dist_mat[point, next_point] = float('inf')
-                    next_point = np.argmin(dist_mat[point, :])
+                    #print("Next point already visited (2)")
+                    dist_mat[point, next_point] = float('inf') 
+                    next_point = np.argmin(dist_mat[point, :]) 
         
         # add distance to total distance for this path
         distance += dist_mat[point, next_point]
 
-        # early abandoning
-        if not simulated_annealing and distance >= dist_to_beat:
-            return float('inf'), None
+        # Early Abandoning
+        # if simulated_annealing and distance >= dist_to_beat:
+        #     print("Abandoned Early")
+        #     return float('inf'), None
         
         # add to path
         order.append(next_point)
         visited.add(next_point)
         point = next_point
+
     order.append(0)
     return distance, order
 
@@ -93,6 +105,7 @@ def create_dist_matrix(data):
     dist_mat = np.zeros((n, n))
     for i in range(n):
         dist_mat[i] = np.sqrt(np.sum((data[i,:] - data[:,:])**2, axis = 1))
+    dist_mat[np.arange(0,n),np.arange(0,n)] = float('inf')
     return dist_mat
 
 if __name__ == '__main__':
