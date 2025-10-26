@@ -69,9 +69,6 @@ def nearest_neighbor_helper(dist_mat, random, dist_to_beat = float('inf')):
 
 # change to numpy
 # euclid = sqrt(sum (a_i - b_i)^2)
-def create_dist_matrix(data):
-    diff = 
-    np.sum(diff**2)
 
 #assumes coords given as x, y 
 def euclid_dist(a: list, b: list):
@@ -81,7 +78,7 @@ def euclid_dist(a: list, b: list):
     return sqrt(diff_sq)
 
 def create_dist_matrix(dataframe):
-  dist_mat = [[float('inf')] * len(dataframe) for i in range len(dataframe)]
+  dist_mat = [[float('inf')] * len(dataframe) for i in range(len(dataframe))]
   for r in range(len(dataframe)):
       for c in range(r + 1,len(dataframe)):
           dist_mat[r,c] = dist_mat[c,r] = euclid_dist(dataframe[r], dataframe[c])

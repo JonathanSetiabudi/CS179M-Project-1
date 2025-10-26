@@ -15,29 +15,29 @@ def two_opt(data, period):
     BSF_dist, BSF_order = nnh(dist_mat.copy(), False)
     ppt(data, BSF_order, "init.png")
 
-    # brute force for loop
+    # repeatedbrute force for loop
     delta_dist = 0
     time_limit = time.time() + period
     print(f"\t\t{BSF_dist:.1f}")
-    print(BSF_order)
-    for i in range(n):
-        j = i + 2
-        ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
-        while j < n and time.time() < time_limit:
-                         # original edge                                       swapped edge ends
-            delta_dist = (ith_edge + dist_mat[BSF_order[j], BSF_order[j+1]]) - (dist_mat[BSF_order[i],BSF_order[j+1]] + dist_mat[BSF_order[j], BSF_order[i+1]])
-            if delta_dist > 0:
-                ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
-                BSF_dist -= delta_dist
-                new_order1 = BSF_order[:i+1]
-                new_order2 = BSF_order[i+1:j+1]
-                new_order2 = new_order2[::-1]
-                new_order3 = BSF_order[j+1:]
-                BSF_order = new_order1 + new_order2 + new_order3
-                print(f"\t\t{BSF_dist:.1f}")
-            j += 1
-        if time.time() >= time_limit:
-            break
+    while time.time() < time_limit:
+        for i in range(n):
+            j = i + 2
+            ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
+            while j < n and time.time() < time_limit:
+                            # original edge                                       swapped edge ends
+                delta_dist = (ith_edge + dist_mat[BSF_order[j], BSF_order[j+1]]) - (dist_mat[BSF_order[i],BSF_order[j+1]] + dist_mat[BSF_order[j], BSF_order[i+1]])
+                if delta_dist > 0:
+                    ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
+                    BSF_dist -= delta_dist
+                    new_order1 = BSF_order[:i+1]
+                    new_order2 = BSF_order[i+1:j+1]
+                    new_order2 = new_order2[::-1]
+                    new_order3 = BSF_order[j+1:]
+                    BSF_order = new_order1 + new_order2 + new_order3
+                    print(f"\t\t{BSF_dist:.1f}")
+                j += 1
+            if time.time() >= time_limit:
+                break
     return BSF_dist, BSF_order
         
 if __name__ == "__main__":
