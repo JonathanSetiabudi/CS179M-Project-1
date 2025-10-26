@@ -1,7 +1,7 @@
 # Follow General Outline Given my P1 Detailed Briefing
 import numpy as np
 from numpy import random
-from user_interface import validate_file
+# from user_interface import validate_file
 import time 
 import math
 
@@ -38,6 +38,7 @@ def random_search(data, period, testing=False):
     seen_perms = set()
     permutation = make_permutation(n)
     time_limit = time.time() + period
+    prev_time = time.time()
 
     # keep trying until interrupt
     while(time.time() < time_limit):
@@ -52,18 +53,19 @@ def random_search(data, period, testing=False):
         for i in range(n-1):
             distance += dist_mat[permutation[i], permutation[i+1]]
             # add for early abandoning
-            # if distance > BSF_dist: 
-            #    break
+            if distance > BSF_dist: 
+               break
 
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = permutation
-            #print(f"New best distance found: {BSF_dist}")
+            print(f"\t\t{BSF_dist}")
             
         permutation = make_permutation(n)
 
-        if testing:
+        if testing and time.time() - prev_time > 1:
             BSF_over_time.append(BSF_dist)
+            prev_time = time.time()
 
     if testing:
         return math.ceil(BSF_dist), BSF_order, BSF_over_time    
