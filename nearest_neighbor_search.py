@@ -17,6 +17,8 @@ def nearest_neighbor_search(data, period, testing=False):
             BSF distance: int
             BSF order: list 
     '''
+    if testing:
+        BSF_over_time = []
     # nxn np array w/ distances
     dist_mat = create_dist_matrix(data)
     np.savetxt("res/32AlmondsDistMat", dist_mat)
@@ -24,8 +26,10 @@ def nearest_neighbor_search(data, period, testing=False):
     time_limit = time.time() + period
     # get with pure nearest neighbor greedy choice
     BSF_dist, BSF_order = nearest_neighbor_helper(dist_mat.copy(), False)
-    print(f"\t\t{BSF_dist}")
+    print(f"\t\t{BSF_dist:.1f}")
+    
     # run until interupt
+    prev_time = time.time()
     while time.time() < time_limit:
         # add a bit of randomness
         distance , order = nearest_neighbor_helper(dist_mat.copy(), True, BSF_dist)
@@ -35,7 +39,11 @@ def nearest_neighbor_search(data, period, testing=False):
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = order
-            print(f"\t\t{BSF_dist}")
+            print(f"\t\t{BSF_dist:.1f}")
+        if testing and time.time() - prev_time > 1:
+                BSF_over_time.append()
+    if testing:
+        return BSF_dist, BSF_order, BSF_over_time
     return BSF_dist, BSF_order
 
 def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float('inf')):
@@ -86,7 +94,7 @@ def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float(
         #     return float('inf'), None
         
         # add to path
-        order.append(next_point)
+        order.append(int(next_point))
         visited.add(next_point)
         point = next_point
 
@@ -106,9 +114,3 @@ def create_dist_matrix(data):
         dist_mat[i] = np.sqrt(np.sum((data[i,:] - data[:,:])**2, axis = 1))
     dist_mat[np.arange(0,n),np.arange(0,n)] = float('inf')
     return dist_mat
-
-if __name__ == '__main__':
-    filename = 'data/32Almonds.txt'
-    data = validate_file(filename)
-    print("Beginning search")
-    nearest_neighbor_search(data, 60)
