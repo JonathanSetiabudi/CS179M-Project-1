@@ -1,6 +1,6 @@
 from nearest_neighbor_search import nearest_neighbor_search as nns
 from random_search import random_search as rs
-from user_interface import validate_file as vf
+from main import validate_file as vf
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,30 +67,33 @@ def save_distances(distances, filename):
     np.savetxt(filename, distances)
 
 if __name__ == '__main__':
-    filename = "data/256Cashew.txt"
-    #create_unit_square(100,"data/100unitSquare.txt")
-    #plot_unit_square(filename)
-    locations = vf(filename)
+    # create unit squares
+    if False:
+        nodes = [64, 128, 256, 512, 1024]
 
-    # algorithm = 'RS'
-    # time = 10
-    # trials = 6
-    # distances = []
-    # for i in range(trials):
-    #     dist, order, over_time = rs(locations, 10, True)
-    #     distances.append(over_time)
+        for n in nodes:
+            create_unit_square(n, f"data/unit_squares/{n}.txt")
+    
+    # unit square optimality test
+    if False:
+        nodes = [64, 128, 256, 512, 1024]
+        trials = 30
+        for n in nodes:
+            data = vf(f"data/unit_squares/{n}.txt")
+            for t in range(trials):
+                rs_dist, _ = rs(data, 10)
 
-    # for d in distances:
-    #     print(len(d))
+                nns_dist, _ = nns(data, 10)
 
-    # distances = np.vstack(distances)
-    # print(distances.shape)
-    # print(distances)
-    # print(get_average_distances(distances))
-    # save_distances(distances, f"res/{algorithm}{trials}T{time}S")
-    # plot_over_time(get_average_distances(distances), "Random Search", time, trials)
-    dist, order = nns(locations, 10)
-    plot_path_taken(locations, order, f"res/path_visuals/NNS{dist}256Cashew10S.png")
+
+    # average bsf dist over time
+    if True:
+        data = vf("data/256Cashew.txt")
+
+    #
+    if False:
+        print()
+
 
    
         
