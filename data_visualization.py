@@ -45,6 +45,7 @@ def plot_path_taken(data, order, filename):
     reordered_data = data[order]
     plt.figure(figsize=(6,6))
     plt.plot(reordered_data[:, 0], reordered_data[:,1], marker = 'o', markerfacecolor = 'blue', linestyle = '-', color = "green")
+    plt.plot(data[0,0], data[0,1], marker = 'o', markerfacecolor = 'red', color = "green")
     plt.title('Order taken')
     plt.xlabel('X-axis')
     plt.ylabel('Y-axis')
@@ -53,14 +54,14 @@ def plot_path_taken(data, order, filename):
 def plot_over_time(distances, algorithm, time, trials):
     plt.figure(figsize=(6,6))
     print(distances.shape)
-    plt.plot(distances, np.arange(0, distances))
+    plt.plot(np.arange(0, distances.shape[0]), distances)
     plt.title(f'{algorithm} average best so far distance over {time} seconds, {trials} trials')
     plt.xlabel('Time (seconds)')
     plt.ylabel('Distance')
     plt.show()
 
 def get_average_distances(distances):
-    return np.sum(distances, axis=0)
+    return np.average(distances, axis=0)
 
 def save_distances(distances, filename):
     np.savetxt(filename, distances)
@@ -73,7 +74,7 @@ if __name__ == '__main__':
 
     # algorithm = 'RS'
     # time = 10
-    # trials = 3
+    # trials = 6
     # distances = []
     # for i in range(trials):
     #     dist, order, over_time = rs(locations, 10, True)
@@ -88,11 +89,8 @@ if __name__ == '__main__':
     # print(get_average_distances(distances))
     # save_distances(distances, f"res/{algorithm}{trials}T{time}S")
     # plot_over_time(get_average_distances(distances), "Random Search", time, trials)
-    #plot_path_taken(locations, order)
+    dist, order = nns(locations, 10)
+    plot_path_taken(locations, order, f"res/path_visuals/NNS{dist}256Cashew10S.png")
 
-    time = [1, 100, 1000]
-    algorithm = "RS"
-    for t in time:
-        dist, order = rs(locations, t)
-        plot_path_taken(locations, order, f"res/path_visuals/{algorithm}{dist}256Cashew{t}S.png")
+   
         
