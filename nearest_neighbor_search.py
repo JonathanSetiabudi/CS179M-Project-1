@@ -1,14 +1,14 @@
 #Follow General Outline Given my P1 Detailed Briefing
 #For now we will use pseudo code because we have questions for Dr. Keogh in tomorrow's lecture. 
 import numpy as np
-from user_interface import validate_file
+# from user_interface import validate_file
 import random
 import time 
 import math
 
 # landing bay is point 0
 
-def nearest_neighbor_search(data, period):
+def nearest_neighbor_search(data, period, testing=False):
     '''
         Input:
             data: np.ndarray, shape: nxn
@@ -24,7 +24,7 @@ def nearest_neighbor_search(data, period):
     time_limit = time.time() + period
     # get with pure nearest neighbor greedy choice
     BSF_dist, BSF_order = nearest_neighbor_helper(dist_mat.copy(), False)
-    print(f"Nearest w/o randomness found, distance: {BSF_dist}")
+    print(f"\t\t{BSF_dist}")
     # run until interupt
     while time.time() < time_limit:
         # add a bit of randomness
@@ -35,9 +35,8 @@ def nearest_neighbor_search(data, period):
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = order
-            print(f"New best distance found: {BSF_dist}")
+            print(f"\t\t{BSF_dist}")
     return BSF_dist, BSF_order
-
 
 def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float('inf')):
     '''
