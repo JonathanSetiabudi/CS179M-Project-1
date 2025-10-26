@@ -7,7 +7,7 @@ import math
 
 # check for indexing mistakes
 def make_permutation(n):
-    order = [i for i in range(0,n)]
+    order = [i for i in range(n)]
     order.append(0)
     order = np.array(order)
     random.shuffle(order[1:n])
@@ -34,7 +34,7 @@ def random_search(data, period):
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = permutation
-        permutation = make_permutation()
+        permutation = make_permutation(n)
         seen_perms.add(tuple(permutation))
     return math.ceil(BSF_dist), BSF_order
 

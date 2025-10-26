@@ -20,6 +20,23 @@ def nearest_neighbor_search(data, period):
     
     return BSF_dist, BSF_order
 
+def nearest_neighbor_search_testing(data, period):
+    dist_mat = create_dist_matrix(data)
+    time_limit = time.time + period
+    prev_time = time.time
+    BSF_dist, BSF_order = nearest_neighbor_helper(dist_mat.copy(), False)
+    BSF_per_sec = []
+    while time.time < time_limit:
+        distance , order = nearest_neighbor_helper(dist_mat.copy(), True, BSF_dist)
+        if distance < BSF_dist:
+            BSF_dist = distance
+            BSF_order = order
+        if time.time - prev_time >= 1:
+            BSF_per_sec.append(BSF_dist)
+            prev_time = time.time
+
+    return BSF_dist, BSF_order, BSF_per_sec
+
 def nearest_neighbor_helper(dist_mat, random, dist_to_beat = float('inf')):
   visited = set()
   order = []
