@@ -19,7 +19,9 @@ def two_opt(data, period):
     delta_dist = 0
     time_limit = time.time() + period
     print(f"\t\t{BSF_dist:.1f}")
-    while time.time() < time_limit:
+    good_delta = True
+    while good_delta:
+        good_delta = False
         for i in range(n):
             j = i + 2
             ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
@@ -27,6 +29,7 @@ def two_opt(data, period):
                             # original edge                                       swapped edge ends
                 delta_dist = (ith_edge + dist_mat[BSF_order[j], BSF_order[j+1]]) - (dist_mat[BSF_order[i],BSF_order[j+1]] + dist_mat[BSF_order[j], BSF_order[i+1]])
                 if delta_dist > 0:
+                    good_delta = True
                     ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
                     BSF_dist -= delta_dist
                     new_order1 = BSF_order[:i+1]
