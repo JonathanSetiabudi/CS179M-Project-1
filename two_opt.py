@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-def two_opt(data, period):
+def two_opt(data, period, verbose=True, testing=False):
+
+    if testing:
+        BSF_over_time = []
+        
     n = data.shape[0]
     # BSF /initial tour from NN
     dist_mat = create_dist_matrix(data)
@@ -17,8 +21,11 @@ def two_opt(data, period):
 
     # repeated brute force for loop
     time_limit = time.time() + period
-    print(f"\t\t{BSF_dist:.1f}")
+    if verbose:
+        print(f"\t\t{BSF_dist:.1f}")
+
     good_delta = True
+    prev_time = time.time()
     while time.time() < time_limit and good_delta:
         good_delta = False
         for i in range(n):
@@ -34,15 +41,24 @@ def two_opt(data, period):
                     good_delta = True
                     BSF_order = new_order_final
                     BSF_dist = new_dist
-                    print(f"\t\t{BSF_dist:.1f}")
+                    if verbose:
+                        print(f"\t\t{BSF_dist:.1f}")
+
+                if testing and time.time() - prev_time > 1 and len(BSF_over_time) < period:
+                    BSF_over_time.append(BSF_dist)
+                    prev_time = time.time()
+
                 j += 1
             if time.time() >= time_limit:
                 break
+    if testing:
+        return BSF_dist, BSF_order, BSF_over_time
     return BSF_dist, BSF_order
         
 if __name__ == "__main__":
     file = "256Cashew"
     data = vf(f"data/{file}.txt")
-    dist, order = two_opt(data, 20)
-    ppt(data, order, f"2opt{file}.png")
+    dist, order, over_time = two_opt(data, 20, verbose=True, testing=True)
+    
+    print(over_time)
 

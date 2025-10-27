@@ -8,7 +8,7 @@ import math
 
 # landing bay is point 0
 
-def nearest_neighbor_search(data, period, testing=False):
+def nearest_neighbor_search(data, period, verbose=True, testing=False):
     '''
         Input:
             data: np.ndarray, shape: nxn
@@ -19,14 +19,15 @@ def nearest_neighbor_search(data, period, testing=False):
     '''
     if testing:
         BSF_over_time = []
+
     # nxn np array w/ distances
     dist_mat = create_dist_matrix(data)
-    np.savetxt("res/32AlmondsDistMat", dist_mat)
     # when to end
     time_limit = time.time() + period
     # get with pure nearest neighbor greedy choice
     BSF_dist, BSF_order = nearest_neighbor_helper(dist_mat.copy(), False)
-    print(f"\t\t{BSF_dist:.1f}")
+    if verbose:
+        print(f"\t\t{BSF_dist:.1f}")
     
     # run until interupt
     prev_time = time.time()
@@ -39,9 +40,13 @@ def nearest_neighbor_search(data, period, testing=False):
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = order
-            print(f"\t\t{BSF_dist:.1f}")
-        if testing and time.time() - prev_time > 1:
-                BSF_over_time.append()
+            if verbose:
+                print(f"\t\t{BSF_dist:.1f}")
+
+        if testing and time.time() - prev_time > 1 and len(BSF_over_time) < period:
+            BSF_over_time.append(BSF_dist)
+            prev_time = time.time()
+    
     if testing:
         return BSF_dist, BSF_order, BSF_over_time
     return BSF_dist, BSF_order

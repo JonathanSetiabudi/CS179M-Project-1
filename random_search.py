@@ -18,7 +18,7 @@ def make_permutation(n):
     random.shuffle(order[1:n])
     return order
 
-def random_search(data, period, testing=False):
+def random_search(data, period, verbose=True, testing=False):
     '''
         Input:
             data: nxn np.array
@@ -59,17 +59,18 @@ def random_search(data, period, testing=False):
         if distance < BSF_dist:
             BSF_dist = distance
             BSF_order = permutation
-            print(f"\t\t{BSF_dist}")
+            if verbose:
+                print(f"\t\t{BSF_dist:.1f}")
             
         permutation = make_permutation(n)
 
-        if testing and time.time() - prev_time > 1:
+        if testing and time.time() - prev_time > 1 and len(BSF_over_time) < period:
             BSF_over_time.append(BSF_dist)
             prev_time = time.time()
 
     if testing:
-        return math.ceil(BSF_dist), BSF_order, BSF_over_time    
-    return math.ceil(BSF_dist), BSF_order
+        return BSF_dist, BSF_order, BSF_over_time    
+    return BSF_dist, BSF_order
 
 def create_dist_matrix(data):
     '''
