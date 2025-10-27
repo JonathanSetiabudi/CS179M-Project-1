@@ -17,8 +17,7 @@ def two_opt(data, period):
     BSF_dist = sum(dist_mat[BSF_order[k], BSF_order[k+1]] for k in range(len(BSF_order) - 1))
     ppt(data, BSF_order, "init.png")
 
-    # repeatedbrute force for loop
-    delta_dist = 0
+    # repeated brute force for loop
     time_limit = time.time() + period
     print(f"\t\t{BSF_dist:.1f}")
     good_delta = True
@@ -26,10 +25,7 @@ def two_opt(data, period):
         good_delta = False
         for i in range(n):
             j = i + 2
-            # ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
             while j < n and time.time() < time_limit:
-                            # original edge                                       swapped edge ends
-                # delta_dist = (ith_edge + dist_mat[BSF_order[j], BSF_order[j+1]]) - (dist_mat[BSF_order[i],BSF_order[j+1]] + dist_mat[BSF_order[j], BSF_order[i+1]])
                 new_order1 = BSF_order[:i+1]
                 new_order2 = BSF_order[i+1:j+1]
                 new_order2 = new_order2[::-1]
@@ -39,7 +35,6 @@ def two_opt(data, period):
                 if new_dist < BSF_dist:
                     good_delta = True
                     BSF_order = new_order_final
-                    # ith_edge = dist_mat[BSF_order[i],BSF_order[i+1]]
                     BSF_dist = new_dist
                     print(f"\t\t{BSF_dist:.1f}")
                 j += 1
