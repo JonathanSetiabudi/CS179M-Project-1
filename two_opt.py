@@ -1,4 +1,6 @@
 from nearest_neighbor_search import nearest_neighbor_helper as nnh
+from nearest_neighbor_search import nearest_neighbor_search as nns
+from user_interface import validate_file as vf
 from random_search import create_dist_matrix
 from data_visualization import plot_path_taken as ppt
 import seaborn as sns
@@ -7,26 +9,20 @@ import matplotlib.pyplot as plt
 import random
 import time
 
-def two_opt(data, period, verbose=True, testing=False):
-
-    if testing:
-        BSF_over_time = []
-        
+def two_opt(data, period):
     n = data.shape[0]
     # BSF /initial tour from NN
     dist_mat = create_dist_matrix(data)
     BSF_dist, BSF_order = nnh(dist_mat.copy(), False)
     # ensure the tour is closed and the distance matches the distance matrix
     BSF_dist = sum(dist_mat[BSF_order[k], BSF_order[k+1]] for k in range(len(BSF_order) - 1))
+    ppt(data, BSF_order, "init.png")
 
     # repeated brute force for loop
     time_limit = time.time() + period
-    if verbose:
-        print(f"\t\t{BSF_dist:.1f}")
-
+    print(f"\t\t{BSF_dist:.1f}")
     good_delta = True
-    prev_time = time.time()
-    while time.time() < time_limit and good_delta:
+    while good_delta:
         good_delta = False
         for i in range(n):
             j = i + 2
@@ -41,24 +37,17 @@ def two_opt(data, period, verbose=True, testing=False):
                     good_delta = True
                     BSF_order = new_order_final
                     BSF_dist = new_dist
-                    if verbose:
-                        print(f"\t\t{BSF_dist:.1f}")
-
-                if testing and time.time() - prev_time > 1 and len(BSF_over_time) < period:
-                    BSF_over_time.append(BSF_dist)
-                    prev_time = time.time()
-
+                    print(f"\t\t{BSF_dist:.1f}")
                 j += 1
             if time.time() >= time_limit:
                 break
-    if testing:
-        return BSF_dist, BSF_order, BSF_over_time
     return BSF_dist, BSF_order
         
 if __name__ == "__main__":
-    file = "256Cashew"
-    data = vf(f"data/{file}.txt")
-    dist, order, over_time = two_opt(data, 20, verbose=True, testing=True)
-    
-    print(over_time)
+    file = "data/unit_squares/1024/45.txt"
+    data = np.loadtxt(file)
+    to_dist, to_order = two_opt(data, 100)
+    nns_dist, nns_order = nns(create_dist_matrix(data), False)
+    ppt(data, nns_order, "res/path_visuals/unit_square_1024_NNS.png")
+    ppt(data, to_order, "res/path_visuals/unit_square_1024_TO.png")
 

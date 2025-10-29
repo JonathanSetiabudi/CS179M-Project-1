@@ -69,6 +69,9 @@ def random_search(data, period, verbose=True, testing=False):
             prev_time = time.time()
 
     if testing:
+        if len(BSF_over_time) < period:
+            while len(BSF_over_time) < period:
+                BSF_over_time.append(BSF_dist)
         return BSF_dist, BSF_order, BSF_over_time    
     return BSF_dist, BSF_order
 
@@ -86,6 +89,6 @@ def create_dist_matrix(data):
     return dist_mat
 
 if __name__ == '__main__':
-    filename = 'data/32Almonds.txt'
-    data = validate_file(filename)
+    # filename = 'data/32Almonds.txt'
+    # data = vf(filename)
     random_search(data, 60)

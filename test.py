@@ -23,11 +23,18 @@ def create_unit_square(n, filename):
     np.savetxt(filename, coords, delimiter = '   ')
 
 if __name__ == '__main__':
+    nodes = [
+        64, 
+        128, 
+        256, 
+        512, 
+        1024
+        ]
+
     # create t unit squares with n nodes
     if False:
         random.seed(42) # seed for reproducibility
-        trials = 30
-        nodes = [32, 64, 128, 256, 512, 1024]
+        trials = 100
         for t in range(trials):
             for n in nodes:
                 create_unit_square(n, f"data/unit_squares/{n}/{t+1}.txt")
@@ -36,7 +43,6 @@ if __name__ == '__main__':
     if False:
         rng = np.random.default_rng(42) # seed for reproducibility
         trials = 100 # number of runs
-        nodes = [32, 64, 128, 256, 512, 1024] # number of nodes
         for t in range(trials):
             for n in nodes:
                 datapath = f"data/random/{n}/{t+1}.txt"
@@ -44,11 +50,10 @@ if __name__ == '__main__':
                 np.savetxt(datapath, coords, delimiter = '   ')
 
     # run trials for unit square optimality test
-    if False:
-        algo = 'RS' # change for each test
-        nodes = [64, 128, 256, 512, 1024]
-        trials = 10
-        time = 1
+    if True:
+        algo = 'TO' # change for each test
+        trials = 30
+        time = 20
 
         best_distances = []
         for n in nodes:
@@ -60,20 +65,20 @@ if __name__ == '__main__':
             print(f"Completed {trials} trials for {n} nodes unit square")
             np_distances = np.vstack(distances)
             best_distances.append(np.average(np_distances, axis=0))
-        best_distances = np.concat(best_distances)
-        np.savetxt(f"res/unit_square_optimality/{algo}_{trials}trials_{time}seconds", best_distances, delimiter = '   ')
+        best_distances = np.concatenate(best_distances)
+        np.savetxt(f"res/unit_square_optimality/{algo}_{trials}trials_{time}seconds.txt", best_distances, delimiter = '   ')
 
     # run trials for average bsf dist over time
     if False:
-        algo = 'RS' # run each algo in different bash
+        algo = 'NNS' # run each algo in different bash
         t = 100 # number of runs
         n = 256
         s = 100
-        output = f"res/distances/{algo}/{t}trials_{n}nodes_{s}seconds"
+        output = f"res/distances/{algo}/{t}trials_256Cashew_{s}seconds"
         distances = []
 
         for i in range(t):
-            datapath = f"data/random/{n}/{i+1}.txt"
+            datapath = f"data/256Cashew.txt"
             data = vf(datapath)
             dist, order, over_time = search(algo, data, s, True)
             distances.append(over_time)

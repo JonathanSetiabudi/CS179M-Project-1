@@ -43,11 +43,14 @@ def nearest_neighbor_search(data, period, verbose=True, testing=False):
             if verbose:
                 print(f"\t\t{BSF_dist:.1f}")
 
-        if testing and time.time() - prev_time > 1 and len(BSF_over_time) < period:
+        if testing and time.time() - prev_time >= 1 and len(BSF_over_time) < period:
             BSF_over_time.append(BSF_dist)
             prev_time = time.time()
     
     if testing:
+        if len(BSF_over_time) < period:
+            while len(BSF_over_time) < period:
+                BSF_over_time.append(BSF_dist)
         return BSF_dist, BSF_order, BSF_over_time
     return BSF_dist, BSF_order
 
@@ -94,9 +97,9 @@ def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float(
         distance += dist_mat[point, next_point]
 
         # Early Abandoning
-        # if simulated_annealing and distance >= dist_to_beat:
-        #     print("Abandoned Early")
-        #     return float('inf'), None
+        if simulated_annealing and distance >= dist_to_beat:
+            # print("Abandoned Early")
+            return float('inf'), None
         
         # add to path
         order.append(int(next_point))
