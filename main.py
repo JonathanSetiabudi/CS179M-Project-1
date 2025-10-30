@@ -49,7 +49,7 @@ def main():
     print(f"There are {n} nodes, computing route...")
 
     print("\tShortest Route Discovered So Far")
-    dist, order = search(algo='NNS', data=data, period=100, testing=False)
+    dist, order = search(algo='TO', data=data, period=100, testing=False)
 
     output_file = f"{input_file}_SOLUTION_{dist:.0f}"
     print(f"Route written to disk as {output_file}")
