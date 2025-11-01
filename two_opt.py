@@ -14,14 +14,26 @@ def two_opt(data, period):
     # BSF /initial tour from NN
     dist_mat = create_dist_matrix(data)
     BSF_dist, BSF_order = nnh(dist_mat.copy(), False)
+    dist = BSF_dist
+    order = BSF_order.copy()
+    time_limit = time.time() + period
     # ensure the tour is closed and the distance matches the distance matrix
     BSF_dist = sum(dist_mat[BSF_order[k], BSF_order[k+1]] for k in range(len(BSF_order) - 1))
-    ppt(data, BSF_order, "init.png")
-
-    # repeated brute force for loop
-    time_limit = time.time() + period
     print(f"\t\t{BSF_dist:.1f}")
+    while time.time() < time_limit:
+        dist, order = two_opt_helper(dist_mat.copy(), time_limit, order, BSF_dist)
+        if dist < BSF_dist:
+            BSF_dist = dist
+            BSF_order = order
+        _, order = nnh(dist_mat.copy(), True)
+    return BSF_dist, BSF_order
+
+def two_opt_helper(dist_mat, time_limit, order, global_best):
+    n = dist_mat.shape[0]
+    # repeated brute force for loop
     good_delta = True
+    BSF_order = order
+    BSF_dist = sum(dist_mat[BSF_order[k], BSF_order[k+1]] for k in range(len(BSF_order) - 1))
     while good_delta:
         good_delta = False
         for i in range(n):
@@ -37,17 +49,17 @@ def two_opt(data, period):
                     good_delta = True
                     BSF_order = new_order_final
                     BSF_dist = new_dist
-                    print(f"\t\t{BSF_dist:.1f}")
+                    if BSF_dist < global_best:
+                        global_best = BSF_dist
+                        print(f"\t\t{BSF_dist:.1f}")
                 j += 1
             if time.time() >= time_limit:
                 break
     return BSF_dist, BSF_order
         
 if __name__ == "__main__":
-    file = "data/unit_squares/1024/45.txt"
+    file = "data/256Cashew.txt"
     data = np.loadtxt(file)
     to_dist, to_order = two_opt(data, 100)
-    nns_dist, nns_order = nns(create_dist_matrix(data), False)
-    ppt(data, nns_order, "res/path_visuals/unit_square_1024_NNS.png")
-    ppt(data, to_order, "res/path_visuals/unit_square_1024_TO.png")
+    ppt(data, to_order, "res/path_visuals/256Cashew_TO.png")
 

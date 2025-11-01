@@ -96,10 +96,10 @@ def nearest_neighbor_helper(dist_mat, simulated_annealing, dist_to_beat = float(
         # add distance to total distance for this path
         distance += dist_mat[point, next_point]
 
-        # Early Abandoning
-        if simulated_annealing and distance >= dist_to_beat:
-            # print("Abandoned Early")
-            return float('inf'), None
+        # Early Abandoning, remove for two_opt
+        # if simulated_annealing and distance >= dist_to_beat:
+        #     # print("Abandoned Early")
+        #     return float('inf'), None
         
         # add to path
         order.append(int(next_point))
