@@ -8,27 +8,46 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import time
+from pynput import keyboard
+import sys
 
-def two_opt(data, period):
+terminate_program = False
+
+
+
+def on_press(key):
+    global terminate_program
+    try:
+        # Check for enter key press, if so set terminate_program to True
+        if key == keyboard.Key.esc:
+            terminate_program = True
+    except AttributeError:
+        # ignore other keys
+        pass
+
+# Start the keyboard listener in a non-blocking way
+listener = keyboard.Listener(on_press=on_press)
+listener.start()
+
+def two_opt(data):
     n = data.shape[0]
     # BSF /initial tour from NN
     dist_mat = create_dist_matrix(data)
     BSF_dist, BSF_order = nnh(dist_mat.copy(), False)
     dist = BSF_dist
     order = BSF_order.copy()
-    time_limit = time.time() + period
     # ensure the tour is closed and the distance matches the distance matrix
     BSF_dist = sum(dist_mat[BSF_order[k], BSF_order[k+1]] for k in range(len(BSF_order) - 1))
     print(f"\t\t{BSF_dist:.1f}")
-    while time.time() < time_limit:
-        dist, order = two_opt_helper(dist_mat.copy(), time_limit, order, BSF_dist)
+    while not terminate_program:
+        dist, order = two_opt_helper(dist_mat.copy(), order, BSF_dist)
         if dist < BSF_dist:
             BSF_dist = dist
             BSF_order = order
         _, order = nnh(dist_mat.copy(), True)
     return BSF_dist, BSF_order
 
-def two_opt_helper(dist_mat, time_limit, order, global_best):
+def two_opt_helper(dist_mat, order, global_best):
     n = dist_mat.shape[0]
     # repeated brute force for loop
     good_delta = True
@@ -40,7 +59,7 @@ def two_opt_helper(dist_mat, time_limit, order, global_best):
         for i in range(n):
             j = i + 2
 
-            while j < n and time.time() < time_limit:
+            while j < n and not terminate_program:
                 new_order1 = BSF_order[:i+1]
                 new_order2 = BSF_order[i+1:j+1]
                 new_order2 = new_order2[::-1]
@@ -54,15 +73,15 @@ def two_opt_helper(dist_mat, time_limit, order, global_best):
                     if BSF_dist < global_best:
                         global_best = BSF_dist
                         print(f"\t\t{BSF_dist:.1f}")
-                        
+
                 j += 1
-            if time.time() >= time_limit:
+            if terminate_program:
                 break
     return BSF_dist, BSF_order
         
 if __name__ == "__main__":
     file = "data/256Cashew.txt"
     data = np.loadtxt(file)
-    to_dist, to_order = two_opt(data, 100)
+    to_dist, to_order = two_opt(data)
     ppt(data, to_order, "res/path_visuals/256Cashew_TO.png")
 

@@ -28,16 +28,16 @@ def main():
     n = data.shape[0]
     print(f"There are {n} nodes, computing route...")
 
-    print("\tShortest Route Discovered So Far")
-    dist, order = to(data, 100)
+    print("\tShortest Route Discovered So Far (Hit 'Escape' to terminate)")
+    dist, order = to(data)
 
     output_file = f"{input_file}_SOLUTION_{dist:.0f}"
     if dist > 6000:
         print("WARNING: This file has a distance more than 6000")
     print(f"Route written to disk as {output_file}")
 
-    np.savetxt(f"solutions/{output_file}.txt", order)
-    ppt(data, order)
+    np.savetxt(f"solutions/{output_file}.txt", order, fmt="%d")
+    ppt(data, order, f"path_visuals/{output_file}.png")
 
 if __name__ == '__main__':
     main()
