@@ -24,6 +24,7 @@ def plot_path_taken(data, order, filename):
     plt.title('Order taken')
     plt.xlabel('X-axis')
     plt.ylabel('Y-axis')
+    plt.show()
     plt.savefig(filename)
 
 def plot_over_time(distances, algorithms, time, trials, scenario):
