@@ -45,6 +45,7 @@ def two_opt(data):
             BSF_dist = dist
             BSF_order = order
         _, order = nnh(dist_mat.copy(), True)
+    BSF_order = [node + 1 for node in BSF_order] # convert to 1-indexed
     return BSF_dist, BSF_order
 
 def two_opt_helper(dist_mat, order, global_best):
