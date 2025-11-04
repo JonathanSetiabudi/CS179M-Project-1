@@ -36,8 +36,8 @@ def main():
         print("WARNING: This file has a distance more than 6000")
     print(f"Route written to disk as {output_file}")
 
-    np.savetxt(f"solutions/{output_file}.txt", order, fmt="%d")
-    ppt(data, order, f"path_visuals/{output_file}.png")
+    np.savetxt(f"{output_file}.txt", order, fmt="%d")
+    ppt(data, order, f"{output_file}.png")
 
 if __name__ == '__main__':
     main()
